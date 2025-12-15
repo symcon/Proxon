@@ -27,8 +27,6 @@ class ProxonConfigurator extends IPSModuleStrict
 		// Convert 
 		$ControlPanels = unpack("N*", substr($ControlPanels, 2));
 
-		$ControlPanels = [0, 255];
-
 		for ($i = 0; $i < 20; $i++) {
 			if (($ControlPanels[1] & (1 << $i)) == 0) {
 				continue;
