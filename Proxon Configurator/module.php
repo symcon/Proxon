@@ -25,10 +25,11 @@ class ProxonConfigurator extends IPSModuleStrict
 		}
 		
 		// Convert 
-		$ControlPanels = unpack("N*", substr($ControlPanels, 2));
+		$ControlPanels = unpack("n*", substr($ControlPanels, 2));
+		$ControlPanels = ($ControlPanels[2] << 16) + $ControlPanels[1];
 
 		for ($i = 0; $i < 20; $i++) {
-			if (($ControlPanels[1] & (1 << $i)) == 0) {
+			if (($ControlPanels & (1 << $i)) == 0) {
 				continue;
 			}
 			$name = sprintf($this->Translate("Controlpanel %d"), $i + 1);
