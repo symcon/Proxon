@@ -33,7 +33,7 @@ class ProxonConfigurator extends IPSModuleStrict
 				continue;
 			}
 			$name = sprintf($this->Translate("Controlpanel %d"), $i + 1);
-			if ($i == 20) {
+			if (($i+1) == 20) {
 				$name = $this->Translate("Controlpanel Main");
 			}
 			$form['actions'][0]['values'][] = [
