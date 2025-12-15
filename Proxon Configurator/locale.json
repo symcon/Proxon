@@ -1,0 +1,10 @@
+{
+    "translations": {
+        "de": { 
+            "Proxon Configurator": "Proxon Konfigurator",
+            "Proxon Controlpanels": "Proxon Bedienpanels",
+            "Controlpanel %d": "Bedienpanel %d",
+            "Controlpanel Main": "Hauptbedienpanel"
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "translations": {
+        "de": { 
+            "ControlPanel": "Bedienpanel",
+            "Interval": "Intervall",
+            "Seconds": "Sekunden",
+            "Update Values": "Werte aktualisieren"
+        }
+    }
+}
