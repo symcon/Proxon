@@ -36,8 +36,8 @@
 			// We use "modulo 20" to target the HNBP, which has ControlPanel ID 20,
 			// but in the ModBus Address space comes always first, therefore Address + 0
 			
-			// CurrentTemperature -> FC4, 590 + X, INT16 (0.1 °C Resolution)
-			$Address = 590 + ($this->ReadPropertyInteger("ControlPanel") % 20);
+			// CurrentTemperature -> FC4, 590 + X*3, INT16 (0.1 °C Resolution)
+			$Address = 590 + (($this->ReadPropertyInteger("ControlPanel") % 20) * 3);
 			$Data = $this->SendDataToParent(json_encode(Array("DataID" => "{E310B701-4AE7-458E-B618-EC13A1A6F6A8}", "Function" => 4, "Address" => $Address , "Quantity" => 1, "Data" => "")));
 			if($Data == false)
 				return;
