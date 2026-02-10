@@ -6,7 +6,7 @@
 			
 			$this->RegisterPropertyInteger("ControlPanel", 1);
 			$this->RegisterPropertyInteger("Interval", 30);
-			
+
 			$this->RegisterTimer("Poller", 0, "PROXON_RequestStatus(\$_IPS['TARGET']);");
  
 		}
@@ -15,52 +15,101 @@
 			//Never delete this line!
 			parent::ApplyChanges();
 			
-			$this->RegisterVariableFloat("CurrentTemperature", $this->Translate("Current Temperature"), [], 1);
-			$this->RegisterVariableFloat("TargetTemperature", $this->Translate("Target Temperature"), [], 2);
+			$this->RegisterVariableFloat("CurrentTemperature", $this->Translate("Current Temperature"), [
+				"PRESENTATION" => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+				"TEMPLATE" => VARIABLE_TEMPLATE_VALUE_PRESENTATION_ROOM_TEMPERATURE
+			], 1);
+			$this->RegisterVariableInteger("TargetTemperature", $this->Translate("Target Temperature"), [
+				"PRESENTATION" => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+				"TEMPLATE" => VARIABLE_TEMPLATE_SLIDER_ROOM_TEMPERATURE
+			], 2);
+			$this->EnableAction("TargetTemperature");
+			$this->RegisterVariableBoolean("PTCRelease", $this->Translate("PTC Release"), [
+				"PRESENTATION" => VARIABLE_PRESENTATION_SWITCH
+			], 3);
+			$this->EnableAction("PTCRelease");
 			
-			$this->SetTimerInterval("Poller", $this->ReadPropertyInteger("Interval"));
+			$this->SetTimerInterval("Poller", $this->ReadPropertyInteger("Interval") * 1000);
 		}
 
 		public function RequestStatus(): void {
+			// We use "modulo 20" to target the HNBP, which has ControlPanel ID 20,
+			// but in the ModBus Address space comes always first, therefore Address + 0
 			
-			/*
-			$Address = 0x00 + ($this->ReadPropertyInteger("Phase") - 1)*2;
-			$Volt = $this->SendDataToParent(json_encode(Array("DataID" => "{E310B701-4AE7-458E-B618-EC13A1A6F6A8}", "Function" => 3, "Address" => $Address , "Quantity" => 2, "Data" => "")));
-			if($Volt === false)
+			// CurrentTemperature -> FC4, 590 + X, INT16 (0.1 °C Resolution)
+			$Address = 590 + ($this->ReadPropertyInteger("ControlPanel") % 20);
+			$Data = $this->SendDataToParent(json_encode(Array("DataID" => "{E310B701-4AE7-458E-B618-EC13A1A6F6A8}", "Function" => 4, "Address" => $Address , "Quantity" => 1, "Data" => "")));
+			if($Data == false)
 				return;
-			$Volt = (unpack("n*", substr($Volt,2)));
-			
-			$Address = 0x0C + ($this->ReadPropertyInteger("Phase") - 1)*2;
-			$Ampere = $this->SendDataToParent(json_encode(Array("DataID" => "{E310B701-4AE7-458E-B618-EC13A1A6F6A8}", "Function" => 3, "Address" => $Address , "Quantity" => 2, "Data" => "")));
-			if($Ampere === false)
-				return;
-			$Ampere = (unpack("n*", substr($Ampere,2)));
-			
-			$Address = 0x12 + ($this->ReadPropertyInteger("Phase") - 1)*2;
-			$Watt = $this->SendDataToParent(json_encode(Array("DataID" => "{E310B701-4AE7-458E-B618-EC13A1A6F6A8}", "Function" => 3, "Address" => $Address , "Quantity" => 2, "Data" => "")));
-			if($Watt === false)
-				return;
-			$Watt = (unpack("n*", substr($Watt,2)));
-			
-			$Address = 0x46 + ($this->ReadPropertyInteger("Phase") - 1)*2;
-			$KWh = $this->SendDataToParent(json_encode(Array("DataID" => "{E310B701-4AE7-458E-B618-EC13A1A6F6A8}", "Function" => 3, "Address" => $Address , "Quantity" => 2, "Data" => "")));
-			if($KWh === false)
-				return;
-			$KWh = (unpack("n*", substr($KWh,2)));
+			$Data = (unpack("n*", substr($Data,2)));
+			// CurrentTemperature is a signed value, so we need to convert it (there is no value for unpacking a signed short)
+			if($Data[1] >= pow(2, 15)) $Data[1] -= pow(2, 16);
+			$this->SetValue("CurrentTemperature", $Data[1] / 10.0);
 
-			if(IPS_GetProperty(IPS_GetInstance($this->InstanceID)['ConnectionID'], "SwapWords")) {
-				SetValue($this->GetIDForIdent("Volt"), ($Volt[1] + ($Volt[2] << 16))/10);
-				SetValue($this->GetIDForIdent("Ampere"), ($Ampere[1] + ($Ampere[2] << 16))/1000);
-				SetValue($this->GetIDForIdent("Watt"), ($Watt[1] + ($Watt[2] << 16))/10);
-				SetValue($this->GetIDForIdent("kWh"), ($KWh[1] + ($KWh[2] << 16))/10);
-			} else {
-				SetValue($this->GetIDForIdent("Volt"), ($Volt[2] + ($Volt[1] << 16))/10);
-				SetValue($this->GetIDForIdent("Ampere"), ($Ampere[2] + ($Ampere[1] << 16))/1000);
-				SetValue($this->GetIDForIdent("Watt"), ($Watt[2] + ($Watt[1] << 16))/10);
-				SetValue($this->GetIDForIdent("kWh"), ($KWh[2] + ($KWh[1] << 16))/10);
-			}
-			*/
+			// MiddleTemperature -> FC3, 233 + X, INT16 (1.0 °C Resolution)
+			$Address = 233 + ($this->ReadPropertyInteger("ControlPanel") % 20);
+			$Data = $this->SendDataToParent(json_encode(Array("DataID" => "{E310B701-4AE7-458E-B618-EC13A1A6F6A8}", "Function" => 3, "Address" => $Address , "Quantity" => 1, "Data" => "")));
+			if($Data == false)
+				return;
+			$MiddleTemperature = (unpack("n*", substr($Data,2)));
+			// MiddleTemperature is a signed value, so we need to convert it (there is no value for unpacking a signed short)
+			if($MiddleTemperature[1] >= pow(2, 15)) $MiddleTemperature[1] -= pow(2, 16);
+
+			// We want to store the MiddleTemperature in a buffer, to use it for SetTemperature
+			$this->SetBuffer("MiddleTemperature", $MiddleTemperature[1]);
+
+			// We need both values to calculate the TargetTemperature, because the MiddleTemperature is the "base" for the TargetTemperature			
+
+			// OffsetTemperature -> FC3, 213 + X, INT16 (1.0 °C Resolution)
+			$Address = 213 + ($this->ReadPropertyInteger("ControlPanel") % 20);
+			$Data = $this->SendDataToParent(json_encode(Array("DataID" => "{E310B701-4AE7-458E-B618-EC13A1A6F6A8}", "Function" => 3, "Address" => $Address , "Quantity" => 1, "Data" => "")));
+			if($Data == false)
+				return;
+			$OffsetTemperature = (unpack("n*", substr($Data,2)));
+			// OffsetTemperature is a signed value, so we need to convert it (there is no value for unpacking a signed short)
+			if($OffsetTemperature[1] >= pow(2, 15)) $OffsetTemperature[1] -= pow(2, 16);
+
+			$this->SetValue("TargetTemperature", $MiddleTemperature[1] + $OffsetTemperature[1]);
 			
+			// PTCRelease -> FC3, 253 + X, INT16 (0 = Gesperrt, 1 = Freigegeben)
+			$Address = 253 + ($this->ReadPropertyInteger("ControlPanel") % 20);
+			$Data = $this->SendDataToParent(json_encode(Array("DataID" => "{E310B701-4AE7-458E-B618-EC13A1A6F6A8}", "Function" => 3, "Address" => $Address , "Quantity" => 1, "Data" => "")));
+			if($Data == false)
+				return;
+			$Data = (unpack("n*", substr($Data,2)));
+			$this->SetValue("PTCRelease", $Data[1] > 0);			
+		}
+
+		public function SetTemperature(int $Value): void {
+			$MiddleTemperature = $this->GetBuffer("MiddleTemperature");
+			if ($MiddleTemperature === false) {
+				die($this->Translate("A current value must be available before a new target temperature can be set."));
+			}
+			
+			$OffsetTemperature = $Value - intval($MiddleTemperature);
+
+			// OffsetTemperature -> FC6, 213 + X, INT16 (1.0 °C Resolution)
+			$Address = 213 + ($this->ReadPropertyInteger("ControlPanel") % 20);
+			$Data = pack("n*", $OffsetTemperature);
+			$this->SendDataToParent(json_encode(Array("DataID" => "{E310B701-4AE7-458E-B618-EC13A1A6F6A8}", "Function" => 6, "Address" => $Address , "Quantity" => 1, "Data" => $Data)));
+		}
+
+		public function SetPTC(bool $Release): void {
+			// PTCRelease -> FC6, 253 + X, INT16 (0 = Gesperrt, 1 = Freigegeben)
+			$Address = 253 + ($this->ReadPropertyInteger("ControlPanel") % 20);
+			$Data = pack("n*", $Release ? 1 : 0);
+			$this->SendDataToParent(json_encode(Array("DataID" => "{E310B701-4AE7-458E-B618-EC13A1A6F6A8}", "Function" => 6, "Address" => $Address , "Quantity" => 1, "Data" => $Data)));
+		}
+
+		public function RequestAction(string $Ident, mixed $Value): void {
+			switch($Ident) {
+				case "TargetTemperature":
+					$this->SetTemperature($Value);
+					break;
+				case "PTCRelease":
+					$this->SetPTC($Value);
+					break;
+			}
 		}
 	}
 ?>

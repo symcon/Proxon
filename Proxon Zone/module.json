@@ -5,7 +5,8 @@
 	"vendor": "Proxon",
 	"aliases": 
 	[
-		"Proxon FWT"
+		"Proxon FWT 2.0",
+		"Proxon FWT 3.0"
 	],
 	"parentRequirements": ["{E310B701-4AE7-458E-B618-EC13A1A6F6A8}"],
 	"childRequirements": [],

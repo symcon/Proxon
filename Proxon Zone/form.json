@@ -3,7 +3,7 @@
 		{
 			"name": "ControlPanel",
 			"type": "NumberSpinner",
-			"caption": "ControlPanel"
+			"caption": "Control Panel"
 		},
 		{
 			"name": "Interval",
