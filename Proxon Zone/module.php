@@ -20,7 +20,7 @@
 				"TEMPLATE" => VARIABLE_TEMPLATE_VALUE_PRESENTATION_ROOM_TEMPERATURE
 			], 1);
 			$this->RegisterVariableInteger("TargetTemperature", $this->Translate("Target Temperature"), [
-				"PRESENTATION" => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+				"PRESENTATION" => VARIABLE_PRESENTATION_SLIDER,
 				"TEMPLATE" => VARIABLE_TEMPLATE_SLIDER_ROOM_TEMPERATURE
 			], 2);
 			$this->EnableAction("TargetTemperature");
