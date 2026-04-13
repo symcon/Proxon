@@ -24,6 +24,19 @@ class ProxonConfigurator extends IPSModuleStrict
 			return json_encode($form);
 		}
 		
+		$getInstanceID = function($ControlPanel) {
+			$ids = IPS_GetInstanceListByModuleID("{9496FF42-B793-02E3-8271-541651A9085F}");
+			foreach ($ids as $id) {
+				if (IPS_GetInstance($id)['ConnectionID'] != IPS_GetInstance($this->InstanceID)['ConnectionID']) {
+					continue;
+				}
+				if (IPS_GetProperty($id, "ControlPanel") == $ControlPanel) {
+					return $id;
+				}
+			}
+			return null;
+		};
+
 		// Convert 
 		$ControlPanels = unpack("n*", substr($ControlPanels, 2));
 		$ControlPanels = ($ControlPanels[2] << 16) + $ControlPanels[1];
@@ -45,6 +58,7 @@ class ProxonConfigurator extends IPSModuleStrict
                         "ControlPanel" => $i + 1,
 					],
 				],
+				"instanceID" => $getInstanceID($i),
             ];
 		}
 
