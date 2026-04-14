@@ -82,7 +82,7 @@
 
 		public function SetTemperature(int $Value): void {
 			$MiddleTemperature = $this->GetBuffer("MiddleTemperature");
-			if ($MiddleTemperature === false) {
+			if ($MiddleTemperature === "") {
 				die($this->Translate("A current value must be available before a new target temperature can be set."));
 			}
 			
