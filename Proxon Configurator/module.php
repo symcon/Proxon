@@ -46,6 +46,7 @@ class ProxonConfigurator extends IPSModuleStrict
 			"address" => 0,
 			"create" => [
 				"moduleID" => "{1D1DC6F5-A07B-FC2B-84E4-D68E6B71D401}",
+				"configuration" => [],
 			],
 		];
 
