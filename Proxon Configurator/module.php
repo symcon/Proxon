@@ -24,7 +24,17 @@ class ProxonConfigurator extends IPSModuleStrict
 			return json_encode($form);
 		}
 		
-		$getInstanceID = function($ControlPanel) {
+		$getMainInstanceID = function() {
+			$ids = IPS_GetInstanceListByModuleID("{1D1DC6F5-A07B-FC2B-84E4-D68E6B71D401}");
+			foreach ($ids as $id) {
+				if (IPS_GetInstance($id)['ConnectionID'] != IPS_GetInstance($this->InstanceID)['ConnectionID']) {
+					continue;
+				}
+			}
+			return null;
+		};
+
+		$getZoneInstanceID = function($ControlPanel) {
 			$ids = IPS_GetInstanceListByModuleID("{9496FF42-B793-02E3-8271-541651A9085F}");
 			foreach ($ids as $id) {
 				if (IPS_GetInstance($id)['ConnectionID'] != IPS_GetInstance($this->InstanceID)['ConnectionID']) {
@@ -48,6 +58,7 @@ class ProxonConfigurator extends IPSModuleStrict
 				"moduleID" => "{1D1DC6F5-A07B-FC2B-84E4-D68E6B71D401}",
 				"configuration" => new stdClass(),
 			],
+			"instanceID" => $getMainInstanceID(),
 		];
 
 		for ($i = 0; $i < 20; $i++) {
@@ -67,7 +78,7 @@ class ProxonConfigurator extends IPSModuleStrict
                         "ControlPanel" => $i + 1,
 					],
 				],
-				"instanceID" => $getInstanceID($i + 1),
+				"instanceID" => $getZoneInstanceID($i + 1),
             ];
 		}
 
