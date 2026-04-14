@@ -52,7 +52,7 @@
 
 		public function SetTemperature(float $Value): void {
 			$Address = 70;
-			$Data = pack("n*", $Value);
+			$Data = pack("n*", intval($Value * 100));
 			$this->SendDataToParent(json_encode(Array("DataID" => "{E310B701-4AE7-458E-B618-EC13A1A6F6A8}", "Function" => 6, "Address" => $Address , "Quantity" => 1, "Data" => bin2hex($Data))));
 
 			$this->SetValue("TargetTemperature", $Value);
