@@ -92,6 +92,8 @@
 			$Address = 213 + ($this->ReadPropertyInteger("ControlPanel") % 20);
 			$Data = pack("n*", $OffsetTemperature);
 			$this->SendDataToParent(json_encode(Array("DataID" => "{E310B701-4AE7-458E-B618-EC13A1A6F6A8}", "Function" => 6, "Address" => $Address , "Quantity" => 1, "Data" => bin2hex($Data))));
+
+			$this->SetValue("TargetTemperature", $Value);
 		}
 
 		public function SetPTC(bool $Release): void {
@@ -99,6 +101,8 @@
 			$Address = 253 + ($this->ReadPropertyInteger("ControlPanel") % 20);
 			$Data = pack("n*", $Release ? 1 : 0);
 			$this->SendDataToParent(json_encode(Array("DataID" => "{E310B701-4AE7-458E-B618-EC13A1A6F6A8}", "Function" => 6, "Address" => $Address , "Quantity" => 1, "Data" => bin2hex($Data))));
+
+			$this->SetValue("PTCRelease", $Release);
 		}
 
 		public function RequestAction(string $Ident, mixed $Value): void {
