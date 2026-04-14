@@ -30,6 +30,7 @@ class ProxonConfigurator extends IPSModuleStrict
 				if (IPS_GetInstance($id)['ConnectionID'] != IPS_GetInstance($this->InstanceID)['ConnectionID']) {
 					continue;
 				}
+				return $id;
 			}
 			return null;
 		};
@@ -40,9 +41,10 @@ class ProxonConfigurator extends IPSModuleStrict
 				if (IPS_GetInstance($id)['ConnectionID'] != IPS_GetInstance($this->InstanceID)['ConnectionID']) {
 					continue;
 				}
-				if (IPS_GetProperty($id, "ControlPanel") == $ControlPanel) {
-					return $id;
+				if (IPS_GetProperty($id, "ControlPanel") != $ControlPanel) {
+					continue;
 				}
+				return $id;
 			}
 			return null;
 		};
