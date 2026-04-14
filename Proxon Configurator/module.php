@@ -58,7 +58,7 @@ class ProxonConfigurator extends IPSModuleStrict
                         "ControlPanel" => $i + 1,
 					],
 				],
-				"instanceID" => $getInstanceID($i),
+				"instanceID" => $getInstanceID($i + 1),
             ];
 		}
 
