@@ -45,10 +45,7 @@ class ProxonConfigurator extends IPSModuleStrict
 			"name" => $this->Translate("ZBP"),
 			"address" => 0,
 			"create" => [
-				"moduleID" => "{9496FF42-B793-02E3-8271-541651A9085F}",
-				"configuration" => [
-					"ControlPanel" => 0,
-				],
+				"moduleID" => "{1D1DC6F5-A07B-FC2B-84E4-D68E6B71D401}",
 			],
 		];
 
