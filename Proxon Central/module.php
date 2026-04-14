@@ -1,5 +1,5 @@
 <?
-	class ProxonMain extends IPSModuleStrict {
+	class ProxonCentral extends IPSModuleStrict {
 		public function Create(): void {
 			//Never delete this line!
 			parent::Create();

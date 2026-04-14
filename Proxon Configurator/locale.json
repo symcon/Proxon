@@ -3,8 +3,9 @@
         "de": { 
             "Proxon Configurator": "Proxon Konfigurator",
             "Proxon Controlpanels": "Proxon Bedienpanels",
-            "Controlpanel %d": "Bedienpanel %d",
-            "Controlpanel Main": "Hauptbedienpanel"
+            "Controlpanel %d": "Nebenbedienpanel %d",
+            "Controlpanel Main": "Hauptnebenbedienpanel",
+            "Controlpanel Central": "Zentralbedienpanel"
         }
     }
 }

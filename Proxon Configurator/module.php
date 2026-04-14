@@ -54,7 +54,7 @@ class ProxonConfigurator extends IPSModuleStrict
 		$ControlPanels = ($ControlPanels[2] << 16) + $ControlPanels[1];
 
 		$form['actions'][0]['values'][] = [
-			"name" => $this->Translate("ZBP"),
+			"name" => $this->Translate("Controlpanel Central"), /* ZBP */
 			"address" => 0,
 			"create" => [
 				"moduleID" => "{1D1DC6F5-A07B-FC2B-84E4-D68E6B71D401}",
@@ -67,9 +67,9 @@ class ProxonConfigurator extends IPSModuleStrict
 			if (($ControlPanels & (1 << $i)) == 0) {
 				continue;
 			}
-			$name = sprintf($this->Translate("NBP %d"), $i + 1);
+			$name = sprintf($this->Translate("Controlpanel %d"), $i + 1); /* NBP */
 			if (($i+1) == 20) {
-				$name = $this->Translate("HNBP");
+				$name = $this->Translate("Controlpanel Main"); /* HNBP */
 			}
 			$form['actions'][0]['values'][] = [
                 "name" => $name,
