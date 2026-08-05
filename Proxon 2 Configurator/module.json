@@ -1,12 +1,12 @@
 {
-	"id": "{1D1DC6F5-A07B-FC2B-84E4-D68E6B71D401}",
-	"name": "ProxonCentral",
-	"type": 3,
-	"vendor": "Proxon",
+	"id": "{2AA27F83-E4DA-48D5-86CF-613C09F1B4B5}",
+	"name": "ProxonConfigurator",
+	"type": 4,
+	"vendor": "ModBus",
 	"aliases": 
 	[
-		"Proxon FWT 2.0",
-		"Proxon FWT 3.0"
+		"Proxon FWT 2.0 Configurator",
+		"Proxon FWT 3.0 Configurator"
 	],
 	"parentRequirements": ["{E310B701-4AE7-458E-B618-EC13A1A6F6A8}"],
 	"childRequirements": [],
